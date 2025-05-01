@@ -1,0 +1,13 @@
+**/__pycache__
+**/.pytest_cache
+**/dist
+.vscode
+/dist
+/build
+*.egg-info
+*.c
+.python-version
+.venv
+venv
+pytest.ini
+.env

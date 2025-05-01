@@ -26,7 +26,6 @@ migrate_working_dir/
 .pub/
 /build/
 analysis_options.yaml
-.env
 
 # Symbolication related
 app.*.symbols
