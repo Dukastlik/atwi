@@ -1,0 +1,53 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_USER: atwi_user
+      POSTGRES_PASSWORD: verymuch_secure_wow
+      POSTGRES_DB: atwi
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  atwi_back:
+    build:
+      context: ./apps/backend/atwi_back
+    environment:
+      DB_HOST: 'postgres'
+      DB_PORT: '5432'
+      DB_NAME: 'atwi'
+      DB_USER: 'atwi_user'
+      DB_PW: 'verymuch_secure_wow'
+      TG_BOT_TOKEN: 'this_is_not_a_valid_token'
+      TG_GROUP_ID: '-1'
+      IS_TELE_APP: 'false'
+    command: >
+      sh -c 
+      "sleep 10 &&
+      alembic -x "sqlalchemy-url=postgresql://atwi_user:verymuch_secure_wow@postgres:5432/atwi" upgrade head &&
+      uvicorn main:app --host 0.0.0.0 --port 8088"
+    ports:
+      - "8088:8088"
+    networks:
+      - app-network
+
+  atwi_front:
+    build:
+      context: ./apps/frontend/and_the_winner_is
+    depends_on:
+      - atwi_back
+    ports:
+      - "8080:80"
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
+    driver: bridge
